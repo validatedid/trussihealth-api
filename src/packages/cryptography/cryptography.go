@@ -9,9 +9,9 @@ import (
 )
 
 type Cryptographer interface {
-	Hash()
-	Encrypt()
-	Decrypt()
+	Hash(data string) (hash string)
+	Encrypt(data string, key []byte) (encrypted string)
+	Decrypt(ciphertext string, key []byte) (plaintext string, err error)
 }
 
 type BasicCryptographer struct{}
