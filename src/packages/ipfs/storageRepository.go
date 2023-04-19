@@ -2,9 +2,10 @@ package ipfs
 
 import (
 	"bytes"
-	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 	"io"
 	"net/http"
+
+	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
 type StorageRepository interface {
@@ -23,8 +24,6 @@ func NewStorageRepository(client restClient.HTTPClient) (i IpfsStorageRepository
 func (i IpfsStorageRepository) Save(data string) (id string) {
 	request, _ := http.NewRequest("POST", "https://url", bytes.NewBufferString(data))
 	response, _ := i.httpClient.Do(request)
-	//response, _ := http.DefaultClient.Do(request)
-	//defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)
 	return string(body)
 }
