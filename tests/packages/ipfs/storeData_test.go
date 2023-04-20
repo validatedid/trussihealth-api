@@ -2,6 +2,7 @@ package storeData_test
 
 import (
 	"bytes"
+	"github.com/stretchr/testify/mock"
 	"io"
 	"net/http"
 	"testing"
@@ -10,25 +11,33 @@ import (
 	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
 )
 
-type HttpClientTestDouble struct {
-	fakedResponse string
+type httpClientMock struct {
+	mock.Mock
 }
 
-func (td HttpClientTestDouble) Do(req *http.Request) (*http.Response, error) {
-	var resp http.Response
-	resp.Body = io.NopCloser(bytes.NewBufferString(td.fakedResponse))
-	return &resp, nil
+func newHttpClientMock() *httpClientMock {
+	return &httpClientMock{}
+}
+
+func (m *httpClientMock) Do(req *http.Request) (*http.Response, error) {
+	args := m.Called(req)
+	return args.Get(0).(*http.Response), args.Error(1)
 }
 
 func TestStoreData(t *testing.T) {
 	identifier := "Ipfs identifier is null"
-	clientTestDouble := &HttpClientTestDouble{fakedResponse: identifier}
+	encryptedData := "encrypted_data"
+	var resp http.Response
+	resp.Body = io.NopCloser(bytes.NewBufferString(identifier))
 
-	data := "encrypted_data"
-
+	clientTestDouble := newHttpClientMock()
+	clientTestDouble.On("Do", mock.Anything).Return(&resp, nil)
 	ipfsStorageRepository := ipfs.NewStorageRepository(clientTestDouble)
-	ipfsIdentifier := ipfsStorageRepository.Save(data)
+	expectedRequest, _ := http.NewRequest("POST", "https://url", bytes.NewBufferString(encryptedData))
+	ipfsIdentifier := ipfsStorageRepository.Save(encryptedData)
 
 	assert.Equal(t, ipfsIdentifier, identifier)
 	assert.NotNil(t, ipfsIdentifier, "Ipfs identifier is null")
+	calledRequest := clientTestDouble.Calls[0].Arguments[0].(*http.Request)
+	assert.Equal(t, calledRequest.Body, expectedRequest.Body)
 }

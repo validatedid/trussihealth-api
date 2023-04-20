@@ -2,12 +2,14 @@ package vidchain
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -16,11 +18,11 @@ type ApiAuthenticator struct {
 	accessToken string
 }
 
-func NewVidchainApiAuthenticator(client restClient.HTTPClient) (a ApiAuthenticator) {
-	return ApiAuthenticator{httpClient: client}
+func NewVidchainApiAuthenticator(client restClient.HTTPClient) (a *ApiAuthenticator) {
+	return &ApiAuthenticator{httpClient: client}
 }
 
-func (a ApiAuthenticator) GetAccessToken() string {
+func (a *ApiAuthenticator) GetAccessToken() string {
 	valid := a.isAccessTokenValid()
 	if !valid {
 		a.authenticate()
@@ -28,53 +30,59 @@ func (a ApiAuthenticator) GetAccessToken() string {
 	return a.accessToken
 }
 
-type AccessTokenResponse struct {
-	accessToken string
-	tokenType   string
-	expiresIn   int
-	issuedAt    int
+type accessTokenResponse struct {
+	AccessToken string `json:"accessToken"`
+	TokenType   string `json:"tokenType"`
+	ExpiresIn   int    `json:"expiresIn"`
+	IssuedAt    int    `json:"issuedAt"`
 }
 
-func (a ApiAuthenticator) authenticate() {
-	data := `{
-	  "grantType": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-	  "assertion": "ewogICAgImlzcyI6ImVudGl0YXRTd2FnZ2VyIiwKICAgImF1ZCI6InZpZGNoYWluLWFwaSIsCiAgICJub25jZSI6InotMDQyN2RjMjUxNWIxIiwKICAgImNhbGxiYWNrVXJsIjoiaHR0cDovLzEyNy4wLjAuMTo4MDgwL2RlbW8vZW50aXRhdC1leGVtcGxlL2NhbGxiYWNrIiwKICAgImFwaUtleSI6ICI2MDAxMGMwZi05MmQ2LTQyMDYtYmFjYi1hMDRhYzA4MGVjNjMiCn0=",
-	  "scope": "vidchain profile entity",
-	  "expiresIn": 900
-	}`
-	request, _ := http.NewRequest("POST", "https://dev.vidchain.net/api/v1/sessions", bytes.NewBufferString(data))
+type AuthenticationBody struct {
+	GrantType string `json:"grantType"`
+	Assertion string `json:"assertion"`
+	Scope     string `json:"scope"`
+	ExpiresIn int64  `json:"expiresIn"`
+}
+
+func (a *ApiAuthenticator) authenticate() {
+	authenticationBody := AuthenticationBody{GrantType: "urn:ietf:params:oauth:grant-type:jwt-bearer", Scope: "vidchain profile entity", ExpiresIn: 900, Assertion: config.TRUSSIHEALTH_ASSERTION}
+	jsonBytes, _ := json.Marshal(authenticationBody)
+	request, _ := http.NewRequest("POST", "https://dev.vidchain.net/api/v1/sessions", bytes.NewBuffer(jsonBytes))
 	response, _ := a.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
-	var accessTokenResponse AccessTokenResponse
+	var accessTokenResponse accessTokenResponse
 	json.Unmarshal(body, &accessTokenResponse)
-	a.accessToken = accessTokenResponse.accessToken
+	a.accessToken = accessTokenResponse.AccessToken
 }
 
-func (a ApiAuthenticator) isAccessTokenValid() bool {
+func (a *ApiAuthenticator) isAccessTokenValid() bool {
 	if a.accessToken == "" {
 		return false
 	}
-	err := checkJWTExpiration(a.accessToken)
-	if err != nil {
+	expired := checkJWTExpiration(a.accessToken)
+	if expired {
 		return false
 	}
 	return true
 }
 
-func checkJWTExpiration(tokenString string) error {
-	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
-	if err != nil {
-		return fmt.Errorf("Failed to parse JWT token: %v", err)
+type Claims struct {
+	Sub   string `json:"sub"`
+	Did   string `json:"did"`
+	Nonce string `json:"nonce"`
+	Iat   int64  `json:"iat"`
+	Exp   int64  `json:"exp"`
+	Aud   string `json:"aud"`
+}
+
+func checkJWTExpiration(tokenString string) bool {
+	parts := strings.Split(tokenString, ".")
+	payloadBytes, _ := base64.RawURLEncoding.DecodeString(parts[1])
+	var claims Claims
+	json.Unmarshal(payloadBytes, &claims)
+	if time.Now().Unix() > claims.Exp {
+		fmt.Println("Token is expired")
+		return true
 	}
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		if exp, ok := claims["exp"].(float64); ok {
-			if time.Now().Unix() > int64(exp) {
-				return fmt.Errorf("Expired JWT token")
-			}
-			// Token is not expired
-			return nil
-		}
-		return fmt.Errorf("Missing or invalid 'exp' claim in JWT token")
-	}
-	return fmt.Errorf("Invalid JWT token claims")
+	return false
 }
