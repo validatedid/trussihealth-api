@@ -1,13 +1,27 @@
-package importData_test
+package vidchain_test
 
 import (
+	"github.com/stretchr/testify/mock"
+	"net/http"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/validatedid/trussihealth-api/src/contexts/importData"
 )
 
-func TestImportData(t *testing.T) {
+type httpClientMock struct {
+	mock.Mock
+}
+
+func newHttpClientMock() *httpClientMock {
+	return &httpClientMock{}
+}
+
+func (m *httpClientMock) Do(req *http.Request) (*http.Response, error) {
+	args := m.Called(req)
+	return args.Get(0).(*http.Response), args.Error(1)
+}
+
+func TestDataTransformData(t *testing.T) {
 	inJsonData := `{
 		"resourceType" : "AllergyIntolerance",
 		"id" : "example",
@@ -127,7 +141,11 @@ func TestImportData(t *testing.T) {
 		  }]
 		}]
 	  }`
-	importData := importData.ImportData{}
+	mockHttpClient := newHttpClientMock()
+	// configureMockForIpfs()
+	// configureMockForNewCredential()
+	// configureMockForEseal()
+	importData := importData.NewImportData(mockHttpClient)
 	importData.Execute(inJsonData)
-	assert.Equal(t, 1, 1, "Test")
+	// assert.Equal(t, 1, 1, "Test")
 }
