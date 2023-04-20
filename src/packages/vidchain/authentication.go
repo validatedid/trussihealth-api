@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+type Authenticator interface {
+	GetAccessToken() string
+}
+
 type ApiAuthenticator struct {
 	httpClient  restClient.HTTPClient
 	accessToken string

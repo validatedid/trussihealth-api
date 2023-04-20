@@ -2,7 +2,6 @@ package vidchain
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"net/http"
 
@@ -10,8 +9,8 @@ import (
 )
 
 type Credential struct {
-	httpClient       restClient.HTTPClient
-	apiAuthenticator ApiAuthenticator
+	httpClient    restClient.HTTPClient
+	authenticator Authenticator
 }
 
 type VcPayload struct {
@@ -20,14 +19,15 @@ type VcPayload struct {
 }
 
 type VerifiableCredential struct {
+	Content []byte
 }
 
-func NewVidchainApiConnector(client restClient.HTTPClient) (i Credential) {
-	return Credential{httpClient: client}
+func NewCredential(client restClient.HTTPClient, apiAuthenticator Authenticator) (c *Credential) {
+	return &Credential{httpClient: client, authenticator: apiAuthenticator}
 }
 
 func (c Credential) CreateVc(payload VcPayload) (verifiableCredential VerifiableCredential) {
-	accessToken := c.apiAuthenticator.GetAccessToken()
+	accessToken := c.authenticator.GetAccessToken()
 	data := `{
 	  "credential": {
 		"id": "https://example.com/credential/2390",
@@ -53,6 +53,6 @@ func (c Credential) CreateVc(payload VcPayload) (verifiableCredential Verifiable
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	response, _ := c.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
-	json.Unmarshal(body, &verifiableCredential)
+	verifiableCredential.Content = body
 	return verifiableCredential
 }
