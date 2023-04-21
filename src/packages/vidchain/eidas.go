@@ -2,6 +2,7 @@ package vidchain
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -24,8 +25,14 @@ func NewEidas(client restClient.HTTPClient, apiAuthenticator Authenticator) (e *
 
 func (e Eidas) EsealVc(payload VerifiableCredential) (esealedVerifiableCredential EsealedVerifiableCredential) {
 	accessToken := e.authenticator.GetAccessToken()
-	request, _ := http.NewRequest("POST", config.EIDAS_PATH, bytes.NewBuffer(payload.Content))
+	requestBody := fmt.Sprintf(`{
+	"issuer": "%s",
+	"payload": %s,
+	"password": "%s"
+	}`, config.ISSUER_DID, payload.Content, config.CERTIFICATE_PASSWORD)
+	request, _ := http.NewRequest("POST", config.EIDAS_PATH, bytes.NewBufferString(requestBody))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
+	request.Header.Set("Content-Type", "application/json")
 	response, _ := e.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
 	esealedVerifiableCredential.Content = body

@@ -41,4 +41,6 @@ var (
 	VERIFIABLE_CREDENTIAL_PATH = VIDCHAIN_API + "/api/v1/verifiable-credentials"
 	SESSIONS_PATH              = VIDCHAIN_API + "/api/v1/sessions"
 	IPFS_URL                   = GetEnvVariable("IPFS_URL")
+	ISSUER_DID                 = GetEnvVariable("ISSUER_DID")
+	CERTIFICATE_PASSWORD       = GetEnvVariable("CERTIFICATE_PASSWORD")
 )

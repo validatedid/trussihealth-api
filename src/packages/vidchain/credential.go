@@ -34,7 +34,7 @@ func (c Credential) CreateVc(payload VcPayload, did string) (verifiableCredentia
 	  "credential": {
 		"id": "https://example.com/credential/2390",
 		"issuer": {
-		  "id": "did:ethr:0xDfBA7E7D6fd9D3B5B900cE2aa3d9E6aA43574FC0",
+		  "id": "%s",
 		  "name": "entitatSwagger"
 		},
 		"type": [
@@ -45,15 +45,17 @@ func (c Credential) CreateVc(payload VcPayload, did string) (verifiableCredentia
 		"credentialSubject": {
 		  "id": "%s",
 		  "documentId": "%s",
- 		  "documentHash": "%s",
+ 		  "documentHash": "%s"
 		}
 	  },
 	  "options": {
 		"revocable": false
 	  }
-	}`, did, payload.DocumentId, payload.Hash)
+	}
+`, config.ISSUER_DID, did, payload.DocumentId, payload.Hash)
 	request, _ := http.NewRequest("POST", config.VERIFIABLE_CREDENTIAL_PATH, bytes.NewBufferString(data))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
+	request.Header.Set("Content-Type", "application/json")
 	response, _ := c.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
 	verifiableCredential.Content = body

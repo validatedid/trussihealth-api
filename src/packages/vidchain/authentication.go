@@ -53,6 +53,7 @@ func (a *ApiAuthenticator) authenticate() {
 	authenticationBody := AuthenticationBody{GrantType: "urn:ietf:params:oauth:grant-type:jwt-bearer", Scope: "vidchain profile entity", ExpiresIn: 900, Assertion: config.TRUSSIHEALTH_ASSERTION}
 	jsonBytes, _ := json.Marshal(authenticationBody)
 	request, _ := http.NewRequest("POST", config.SESSIONS_PATH, bytes.NewBuffer(jsonBytes))
+	request.Header.Set("Content-Type", "application/json")
 	response, _ := a.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
 	var accessTokenResponse accessTokenResponse

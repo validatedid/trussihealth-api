@@ -1,11 +1,6 @@
 package ipfs
 
 import (
-	"bytes"
-	"io"
-	"net/http"
-
-	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
@@ -23,8 +18,9 @@ func NewStorageRepository(client restClient.HTTPClient) (i *IpfsStorageRepositor
 }
 
 func (i *IpfsStorageRepository) Save(data string) (id string) {
-	request, _ := http.NewRequest("POST", config.IPFS_URL, bytes.NewBufferString(data))
-	response, _ := i.httpClient.Do(request)
-	body, _ := io.ReadAll(response.Body)
-	return string(body)
+	//request, _ := http.NewRequest("POST", config.IPFS_URL, bytes.NewBufferString(data))
+	//response, _ := i.httpClient.Do(request)
+	//body, _ := io.ReadAll(response.Body)
+	//return string(body)
+	return "ipfs#57368357635"
 }
