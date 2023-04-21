@@ -2,9 +2,11 @@ package vidchain
 
 import (
 	"bytes"
-	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 	"io"
 	"net/http"
+
+	"github.com/validatedid/trussihealth-api/src/packages/config"
+	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
 type Eidas struct {
@@ -22,7 +24,7 @@ func NewEidas(client restClient.HTTPClient, apiAuthenticator Authenticator) (e *
 
 func (e Eidas) EsealVc(payload VerifiableCredential) (esealedVerifiableCredential EsealedVerifiableCredential) {
 	accessToken := e.authenticator.GetAccessToken()
-	request, _ := http.NewRequest("POST", "https://dev.vidchain.net/api/v1/eidas/signatures", bytes.NewBuffer(payload.Content))
+	request, _ := http.NewRequest("POST", config.EIDAS_PATH, bytes.NewBuffer(payload.Content))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	response, _ := e.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)

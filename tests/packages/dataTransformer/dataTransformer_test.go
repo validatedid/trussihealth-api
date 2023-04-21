@@ -127,7 +127,7 @@ func TestExtract(t *testing.T) {
 		  }]
 		}]
 	  }`
-	expectedTransformedData := dataTransformer.HealthData{
+	expectedTransformedData := dataTransformer.HealthDataDetails{
 		ResourceType: "AllergyIntolerance",
 		Patient:      "Patient/example",
 	}

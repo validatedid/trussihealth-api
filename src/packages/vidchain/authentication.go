@@ -5,12 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/validatedid/trussihealth-api/src/packages/config"
-	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 	"io"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/validatedid/trussihealth-api/src/packages/config"
+	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
 type Authenticator interface {
@@ -51,7 +52,7 @@ type AuthenticationBody struct {
 func (a *ApiAuthenticator) authenticate() {
 	authenticationBody := AuthenticationBody{GrantType: "urn:ietf:params:oauth:grant-type:jwt-bearer", Scope: "vidchain profile entity", ExpiresIn: 900, Assertion: config.TRUSSIHEALTH_ASSERTION}
 	jsonBytes, _ := json.Marshal(authenticationBody)
-	request, _ := http.NewRequest("POST", "https://dev.vidchain.net/api/v1/sessions", bytes.NewBuffer(jsonBytes))
+	request, _ := http.NewRequest("POST", config.SESSIONS_PATH, bytes.NewBuffer(jsonBytes))
 	response, _ := a.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
 	var accessTokenResponse accessTokenResponse

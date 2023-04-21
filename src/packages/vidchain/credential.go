@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
@@ -49,7 +50,7 @@ func (c Credential) CreateVc(payload VcPayload) (verifiableCredential Verifiable
 		"revocable": false
 	  }
 	}`
-	request, _ := http.NewRequest("POST", "https://dev.vidchain.net/api/v1/verifiable-credentials", bytes.NewBufferString(data))
+	request, _ := http.NewRequest("POST", config.VERIFIABLE_CREDENTIAL_PATH, bytes.NewBufferString(data))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	response, _ := c.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)

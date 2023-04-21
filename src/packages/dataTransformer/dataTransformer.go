@@ -2,14 +2,14 @@ package dataTransformer
 
 import "encoding/json"
 
-type HealthData struct {
+type HealthDataDetails struct {
 	ResourceType string
 	Patient      string
 }
 
 type DataTransformer struct{}
 
-func (dt DataTransformer) Extract(inJsonData string) HealthData {
+func (dt DataTransformer) Extract(inJsonData string) HealthDataDetails {
 	var data map[string]interface{}
 	json.Unmarshal([]byte(inJsonData), &data)
 
@@ -17,5 +17,5 @@ func (dt DataTransformer) Extract(inJsonData string) HealthData {
 	patient := data["patient"].(map[string]interface{})
 	patientReference := patient["reference"].(string)
 
-	return HealthData{ResourceType: resourceType, Patient: patientReference}
+	return HealthDataDetails{ResourceType: resourceType, Patient: patientReference}
 }
