@@ -2,6 +2,7 @@ package vidchain
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -27,9 +28,9 @@ func NewCredential(client restClient.HTTPClient, apiAuthenticator Authenticator)
 	return &Credential{httpClient: client, authenticator: apiAuthenticator}
 }
 
-func (c Credential) CreateVc(payload VcPayload) (verifiableCredential VerifiableCredential) {
+func (c Credential) CreateVc(payload VcPayload, did string) (verifiableCredential VerifiableCredential) {
 	accessToken := c.authenticator.GetAccessToken()
-	data := `{
+	data := fmt.Sprintf(`{
 	  "credential": {
 		"id": "https://example.com/credential/2390",
 		"issuer": {
@@ -42,14 +43,15 @@ func (c Credential) CreateVc(payload VcPayload) (verifiableCredential Verifiable
 		],
 		"validUntil": "2030-01-01T21:19:10Z",
 		"credentialSubject": {
-		  "id": "did:ethr:0x2Bb1629Dc1f992E00a9E170464BE3802ba259B3E",
-		  "documentId"
+		  "id": "%s",
+		  "documentId": "%s",
+ 		  "documentHash": "%s",
 		}
 	  },
 	  "options": {
 		"revocable": false
 	  }
-	}`
+	}`, did, payload.DocumentId, payload.Hash)
 	request, _ := http.NewRequest("POST", config.VERIFIABLE_CREDENTIAL_PATH, bytes.NewBufferString(data))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	response, _ := c.httpClient.Do(request)
