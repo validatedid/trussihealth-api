@@ -8,11 +8,23 @@ import (
 )
 
 func init() {
+
 	// Load environment variables from .env file
-	err := godotenv.Load("../../../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	env := os.Getenv("APP_ENV")
+
+	switch env {
+	case "local":
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatal("Error loading local .env file")
+		}
+	default: // testing cases
+		err := godotenv.Load("../../.env")
+		if err != nil {
+			log.Fatal("Error loading test .env file")
+		}
 	}
+
 }
 
 // Get the value of an environment variable

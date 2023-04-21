@@ -13,8 +13,8 @@ import (
 )
 
 type HealthDataRequest struct {
-	Data interface{}
-	Did  string
+	Data interface{} `json:"data"`
+	Did  string      `json:"did"`
 }
 
 type ImportData struct {
@@ -43,7 +43,8 @@ func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
 }
 
 func encryptData(healthDataRequest HealthDataRequest) (string, string) {
-	healthDataDetails := dataTransformer.DataTransformer{}.Extract(string(healthDataRequest.Data.([]byte)))
+	data, _ := json.Marshal(healthDataRequest.Data)
+	healthDataDetails := dataTransformer.DataTransformer{}.Extract(string(data))
 	json, _ := json.Marshal(healthDataDetails)
 	basicCryptographer := cryptography.BasicCryptographer{}
 	hash := basicCryptographer.Hash(string(json))
