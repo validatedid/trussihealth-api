@@ -18,29 +18,35 @@ type HealthDataRequest struct {
 }
 
 type ImportData struct {
-	httpClient restClient.HTTPClient
+	ipfsStorageRepository *ipfs.IpfsStorageRepository
+	apiAuthenticator      *vidchain.ApiAuthenticator
+	credential            *vidchain.Credential
+	eidas                 *vidchain.Eidas
 }
 
-func NewImportData(client restClient.HTTPClient) (a *ImportData) {
-	return &ImportData{httpClient: client}
+func NewImportData(client restClient.HTTPClient) (i *ImportData) {
+	ipfs := ipfs.NewStorageRepository(client)
+	authenticator := vidchain.NewVidchainApiAuthenticator(client)
+	credentialCreator := vidchain.NewCredential(client, authenticator)
+	eidasSealer := vidchain.NewEidas(client, authenticator)
+	return &ImportData{ipfsStorageRepository: ipfs, apiAuthenticator: authenticator, credential: credentialCreator, eidas: eidasSealer}
 }
 
-func (id *ImportData) Execute(healthDataRequest HealthDataRequest) {
+func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
+	hash, encryptedData := encryptData(healthDataRequest)
+
+	ipfsIdentifier := i.ipfsStorageRepository.Save(encryptedData)
+
+	vc := i.credential.CreateVc(vidchain.VcPayload{DocumentId: ipfsIdentifier, Hash: hash}, healthDataRequest.Did)
+
+	i.eidas.EsealVc(vc)
+}
+
+func encryptData(healthDataRequest HealthDataRequest) (string, string) {
 	healthDataDetails := dataTransformer.DataTransformer{}.Extract(string(healthDataRequest.Data.([]byte)))
 	json, _ := json.Marshal(healthDataDetails)
 	basicCryptographer := cryptography.BasicCryptographer{}
 	hash := basicCryptographer.Hash(string(json))
 	encryptedData := basicCryptographer.Encrypt(string(json), []byte(config.ENCRYPTION_KEY))
-
-	ipfsStorageRepository := ipfs.NewStorageRepository(id.httpClient)
-	ipfsIdentifier := ipfsStorageRepository.Save(encryptedData)
-
-	vidchainApiAuthenticator := vidchain.NewVidchainApiAuthenticator(id.httpClient)
-
-	credential := vidchain.NewCredential(id.httpClient, vidchainApiAuthenticator)
-	vcPayload := vidchain.VcPayload{DocumentId: ipfsIdentifier, Hash: hash}
-	vc := credential.CreateVc(vcPayload)
-
-	eidas := vidchain.NewEidas(id.httpClient, vidchainApiAuthenticator)
-	eidas.EsealVc(vc)
+	return hash, encryptedData
 }

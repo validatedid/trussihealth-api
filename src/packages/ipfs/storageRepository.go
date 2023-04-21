@@ -18,11 +18,11 @@ type IpfsStorageRepository struct {
 	httpClient restClient.HTTPClient
 }
 
-func NewStorageRepository(client restClient.HTTPClient) (i IpfsStorageRepository) {
-	return IpfsStorageRepository{httpClient: client}
+func NewStorageRepository(client restClient.HTTPClient) (i *IpfsStorageRepository) {
+	return &IpfsStorageRepository{httpClient: client}
 }
 
-func (i IpfsStorageRepository) Save(data string) (id string) {
+func (i *IpfsStorageRepository) Save(data string) (id string) {
 	request, _ := http.NewRequest("POST", config.IPFS_URL, bytes.NewBufferString(data))
 	response, _ := i.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
