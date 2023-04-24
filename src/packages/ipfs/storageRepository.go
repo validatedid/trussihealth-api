@@ -1,6 +1,9 @@
 package ipfs
 
 import (
+	"bytes"
+	"fmt"
+	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/validatedid/trussihealth-api/src/packages/restClient"
 )
 
@@ -18,9 +21,20 @@ func NewStorageRepository(client restClient.HTTPClient) (i *IpfsStorageRepositor
 }
 
 func (i *IpfsStorageRepository) Save(data string) (id string) {
-	//request, _ := http.NewRequest("POST", config.IPFS_URL, bytes.NewBufferString(data))
-	//response, _ := i.httpClient.Do(request)
-	//body, _ := io.ReadAll(response.Body)
-	//return string(body)
-	return "ipfs#57368357635"
+	// create a new IPFS API client
+	sh := shell.NewShell("http://52.157.145.27:5001")
+
+	// read file contents into memory
+	fileContents := []byte(data)
+
+	// add file to IPFS
+	hash, err := sh.Add(bytes.NewReader(fileContents))
+	if err != nil {
+		panic(err)
+	}
+
+	// print IPFS hash of the file
+	fmt.Println("File uploaded to IPFS with hash:", hash)
+
+	return hash
 }
