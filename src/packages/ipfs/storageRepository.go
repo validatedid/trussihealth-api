@@ -3,8 +3,7 @@ package ipfs
 import (
 	"bytes"
 	"fmt"
-	shell "github.com/ipfs/go-ipfs-api"
-	"github.com/validatedid/trussihealth-api/src/packages/restClient"
+	"io"
 )
 
 type StorageRepository interface {
@@ -12,23 +11,28 @@ type StorageRepository interface {
 	GetById(id string) (data string)
 }
 
-type IpfsStorageRepository struct {
-	httpClient restClient.HTTPClient
+type IPFSClient interface {
+	Add(data *bytes.Reader) (hash string, error error)
+	Cat(path string) (io.ReadCloser, error)
 }
 
-func NewStorageRepository(client restClient.HTTPClient) (i *IpfsStorageRepository) {
-	return &IpfsStorageRepository{httpClient: client}
+type IpfsStorageRepository struct {
+	ipfsClient IPFSClient
+}
+
+func NewStorageRepository(client IPFSClient) (i *IpfsStorageRepository) {
+	// create a new IPFS API client
+	// sh := shell.NewShell("http://52.157.145.27:5001")
+	return &IpfsStorageRepository{ipfsClient: client}
 }
 
 func (i *IpfsStorageRepository) Save(data string) (id string) {
-	// create a new IPFS API client
-	sh := shell.NewShell("http://52.157.145.27:5001")
 
 	// read file contents into memory
 	fileContents := []byte(data)
 
 	// add file to IPFS
-	hash, err := sh.Add(bytes.NewReader(fileContents))
+	hash, err := i.ipfsClient.Add(bytes.NewReader(fileContents))
 	if err != nil {
 		panic(err)
 	}
@@ -37,4 +41,16 @@ func (i *IpfsStorageRepository) Save(data string) (id string) {
 	fmt.Println("File uploaded to IPFS with hash:", hash)
 
 	return hash
+}
+
+func (i *IpfsStorageRepository) GetById(id string) string {
+	data, err := i.ipfsClient.Cat(id)
+	if err != nil {
+		panic(err)
+	}
+	stringData, _ := io.ReadAll(data)
+	// print IPFS hash of the file
+	fmt.Println("File retrieved hash:", id)
+	fmt.Println("File retrieved:", string(stringData))
+	return string(stringData)
 }
