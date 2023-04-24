@@ -56,6 +56,7 @@ func (a *ApiAuthenticator) authenticate() {
 	request.Header.Set("Content-Type", "application/json")
 	response, _ := a.httpClient.Do(request)
 	body, _ := io.ReadAll(response.Body)
+
 	var accessTokenResponse accessTokenResponse
 	json.Unmarshal(body, &accessTokenResponse)
 	a.accessToken = accessTokenResponse.AccessToken
