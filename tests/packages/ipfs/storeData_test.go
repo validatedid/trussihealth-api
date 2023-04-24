@@ -2,8 +2,10 @@ package storeData_test
 
 import (
 	"bytes"
+	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
 	"io"
 	"strings"
@@ -56,10 +58,10 @@ func TestGetById(t *testing.T) {
 	assert.Equal(t, documentMock, data)
 }
 
-/*func TestGetByE2EId(t *testing.T) {
-	sh := shell.NewShell("http://52.157.145.27:5001")
+func TestGetByE2EId(t *testing.T) {
+	sh := shell.NewShell(config.IPFS_URL)
 	ipfsWrapper := ipfs.NewIPFSClientWrapper(sh)
 	ipfsStorageRepository := ipfs.NewStorageRepository(ipfsWrapper)
 	data := ipfsStorageRepository.GetById("QmVHKK8MwmB6FTywF7giespBej7eW7i4x7y8683ZbAENhj")
 	assert.NotNil(t, data)
-}*/
+}

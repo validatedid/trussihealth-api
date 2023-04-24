@@ -24,8 +24,8 @@ type ImportData struct {
 	eidas                 *vidchain.Eidas
 }
 
-func NewImportData(client restClient.HTTPClient) (i *ImportData) {
-	ipfs := ipfs.NewStorageRepository(client)
+func NewImportData(client restClient.HTTPClient, ipfsClient ipfs.IPFSClient) (i *ImportData) {
+	ipfs := ipfs.NewStorageRepository(ipfsClient)
 	authenticator := vidchain.NewVidchainApiAuthenticator(client)
 	credentialCreator := vidchain.NewCredential(client, authenticator)
 	eidasSealer := vidchain.NewEidas(client, authenticator)

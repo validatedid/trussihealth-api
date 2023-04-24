@@ -2,6 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	shell "github.com/ipfs/go-ipfs-api"
+	"github.com/validatedid/trussihealth-api/src/packages/config"
+	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
 	"io"
 	"net/http"
 
@@ -16,7 +19,9 @@ func PostHealthDataController(router *gin.Engine) {
 		jsonRequest, _ := io.ReadAll(c.Request.Body)
 		var healthData importData.HealthDataRequest
 		json.Unmarshal(jsonRequest, &healthData)
-		importData.NewImportData(http.DefaultClient).Execute(healthData)
+		sh := shell.NewShell(config.IPFS_URL)
+		ipfsWrapper := ipfs.NewIPFSClientWrapper(sh)
+		importData.NewImportData(http.DefaultClient, ipfsWrapper).Execute(healthData)
 		c.JSON(http.StatusOK, gin.H{})
 	})
 }
