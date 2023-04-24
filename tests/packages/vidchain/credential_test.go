@@ -74,7 +74,7 @@ func TestCreateCredential(t *testing.T) {
 	  "credential": {
 		"id": "https://example.com/credential/2390",
 		"issuer": {
-		  "id": "did:ethr:0xDfBA7E7D6fd9D3B5B900cE2aa3d9E6aA43574FC0",
+		  "id": "did:ethr:0x9A668DBe392230c407beC406CC4bb965C16CAbee",
 		  "name": "entitatSwagger"
 		},
 		"type": [
@@ -85,7 +85,7 @@ func TestCreateCredential(t *testing.T) {
 		"credentialSubject": {
 		  "id": "%s",
 		  "documentId": "%s",
- 		  "documentHash": "%s",
+ 		  "documentHash": "%s"
 		}
 	  },
 	  "options": {

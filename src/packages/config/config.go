@@ -7,6 +7,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Define configuration variables
+var (
+	EIDAS_PATH                 = VIDCHAIN_API + "/api/v1/eidas/signatures"
+	VERIFIABLE_CREDENTIAL_PATH = VIDCHAIN_API + "/api/v1/verifiable-credentials"
+	SESSIONS_PATH              = VIDCHAIN_API + "/api/v1/sessions"
+	TRUSSIHEALTH_ASSERTION     = ""
+	ENCRYPTION_KEY             = ""
+	VIDCHAIN_API               = ""
+	IPFS_URL                   = ""
+	ISSUER_DID                 = ""
+	CERTIFICATE_PASSWORD       = ""
+)
+
 func init() {
 
 	// Load environment variables from .env file
@@ -19,28 +32,21 @@ func init() {
 			log.Fatal("Error loading local .env file")
 		}
 	default: // testing cases
-		err := godotenv.Load("../../.env")
+		err := godotenv.Load("../../../.env")
 		if err != nil {
 			log.Fatal("Error loading test .env file")
 		}
 	}
 
+	TRUSSIHEALTH_ASSERTION = GetEnvVariable("TRUSSIHEALTH_ASSERTION")
+	ENCRYPTION_KEY = GetEnvVariable("ENCRYPTION_KEY")
+	VIDCHAIN_API = GetEnvVariable("VIDCHAIN_API")
+	IPFS_URL = GetEnvVariable("IPFS_URL")
+	ISSUER_DID = GetEnvVariable("ISSUER_DID")
+	CERTIFICATE_PASSWORD = GetEnvVariable("CERTIFICATE_PASSWORD")
 }
 
 // Get the value of an environment variable
 func GetEnvVariable(key string) string {
 	return os.Getenv(key)
 }
-
-// Define configuration variables
-var (
-	TRUSSIHEALTH_ASSERTION     = GetEnvVariable("TRUSSIHEALTH_ASSERTION")
-	ENCRYPTION_KEY             = GetEnvVariable("ENCRYPTION_KEY")
-	VIDCHAIN_API               = GetEnvVariable("VIDCHAIN_API")
-	EIDAS_PATH                 = VIDCHAIN_API + "/api/v1/eidas/signatures"
-	VERIFIABLE_CREDENTIAL_PATH = VIDCHAIN_API + "/api/v1/verifiable-credentials"
-	SESSIONS_PATH              = VIDCHAIN_API + "/api/v1/sessions"
-	IPFS_URL                   = GetEnvVariable("IPFS_URL")
-	ISSUER_DID                 = GetEnvVariable("ISSUER_DID")
-	CERTIFICATE_PASSWORD       = GetEnvVariable("CERTIFICATE_PASSWORD")
-)

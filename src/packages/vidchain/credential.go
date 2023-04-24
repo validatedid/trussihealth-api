@@ -30,6 +30,7 @@ func NewCredential(client restClient.HTTPClient, apiAuthenticator Authenticator)
 
 func (c Credential) CreateVc(payload VcPayload, did string) (verifiableCredential VerifiableCredential) {
 	accessToken := c.authenticator.GetAccessToken()
+	issuer := config.ISSUER_DID
 	data := fmt.Sprintf(`{
 	  "credential": {
 		"id": "https://example.com/credential/2390",
@@ -51,8 +52,7 @@ func (c Credential) CreateVc(payload VcPayload, did string) (verifiableCredentia
 	  "options": {
 		"revocable": false
 	  }
-	}
-`, config.ISSUER_DID, did, payload.DocumentId, payload.Hash)
+	}`, issuer, did, payload.DocumentId, payload.Hash)
 	request, _ := http.NewRequest("POST", config.VERIFIABLE_CREDENTIAL_PATH, bytes.NewBufferString(data))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	request.Header.Set("Content-Type", "application/json")
