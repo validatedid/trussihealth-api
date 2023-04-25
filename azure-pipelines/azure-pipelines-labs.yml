@@ -1,0 +1,98 @@
+trigger:
+  branches:
+    include:
+      - main
+pr: none
+
+resources:
+  - repo: self
+
+variables:
+  # Docker Buildkit improves image build performance
+  DOCKER_BUILDKIT: 1
+  # Image repository
+  Repo: 'trussihealth-api'
+  RepoEndpoint: 'k8scrvidchainlabs.azurecr.io/trussihealth-api'
+  # Repository directory
+  dir: '.'
+  # Dockerfile
+  Dockerfile: '$(dir)/Dockerfile'
+  # Kubernetes YAML
+  k8s: '$(dir)/k8s/k8s-labs.yml'
+  # Configmaps
+  configMap: '$(dir)/k8s/configmap-labs.yml'
+  # Kubernetes namespace
+  namespace: 'labs'
+  # Image tagging: application version - build
+  tag: $(Build.BuildNumber)
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+  - stage: 'Build'
+    jobs:
+      - job: Build
+        displayName: 'Build trussihealth-api'
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: Login ACR
+            inputs:
+              command: login
+              containerRegistry: $(dockerRegistryServiceConnection)
+          - script: 'docker pull $(RepoEndpoint):latest'
+            displayName: Pull latest for layer caching
+            continueOnError: true # for first build, no cache
+          - task: Docker@2
+            displayName: 'build --cache-from=$(RepoEndpoint):latest'
+            inputs:
+              containerRegistry: '$(dockerRegistryServiceConnection)'
+              repository: '$(Repo)'
+              command: 'build'
+              Dockerfile: $(Dockerfile)
+              arguments: '--cache-from=$(RepoEndpoint):latest'
+              tags: |
+                $(tag)
+                latest
+          - task: Docker@2
+            displayName: 'push'
+            inputs:
+              command: push
+              containerRegistry: '$(dockerRegistryServiceConnection)'
+              repository: $(Repo)
+              tags: |
+                $(tag)
+                latest
+  - stage: Deploy
+    displayName: 'Deploy stage'
+    dependsOn: Build
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy trussihealth-api'
+        pool:
+          vmImage: $(vmImageName)
+        environment: 'labs'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  fetchDepth: 1
+                - task: Kubernetes@1
+                  displayName: Create/update configmap
+                  inputs:
+                    connectionType: Azure Resource Manager
+                    azureSubscriptionEndpoint: $(azureSubscriptionEndpoint)
+                    azureResourceGroup: $(azureResourceGroup)
+                    kubernetesCluster: $(kubernetesCluster)
+                    command: apply
+                    arguments: -f $(configMap) -n $(namespace)
+                - task: KubernetesManifest@0
+                  displayName: Create/update deployment
+                  inputs:
+                    kubernetesServiceConnection: $(kubernetesServiceConnection)
+                    namespace: $(namespace)
+                    manifests: $(k8s)
+                    containers: |
+                      $(RepoEndpoint):$(tag)
