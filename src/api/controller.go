@@ -10,11 +10,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/validatedid/trussihealth-api/src/contexts/importData"
 )
 
-func PostHealthDataController(router *gin.Engine) {
+func PostHealthDataController(router *gin.RouterGroup) {
 	router.POST("/health-data", func(c *gin.Context) {
 		jsonRequest, _ := io.ReadAll(c.Request.Body)
 		var healthData importData.HealthDataRequest
@@ -26,7 +25,7 @@ func PostHealthDataController(router *gin.Engine) {
 	})
 }
 
-func GetHealthDataController(router *gin.Engine) {
+func GetHealthDataController(router *gin.RouterGroup) {
 	router.GET("/health-data/:hash", func(c *gin.Context) {
 		documentHash := c.Param("hash")
 		sh := shell.NewShell(config.IPFS_URL)
