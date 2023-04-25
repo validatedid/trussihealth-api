@@ -1,5 +1,6 @@
+#!/bin/bash
 # syntax=docker/dockerfile:1
-FROM golang:1.20-alpine AS build
+FROM --platform=linux/amd64 golang:1.20-alpine AS build
 # set the working directory inside the container
 WORKDIR /app
 

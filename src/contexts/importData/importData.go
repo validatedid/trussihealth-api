@@ -40,8 +40,6 @@ func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
 	vc := i.credential.CreateVc(vidchain.VcPayload{DocumentId: ipfsIdentifier, Hash: hash}, healthDataRequest.Did)
 
 	i.eidas.EsealVc(vc)
-	x := "hello"
-	println(x)
 }
 
 func encryptData(healthDataRequest HealthDataRequest) (string, string) {

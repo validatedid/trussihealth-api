@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trussihealth-api-deployment
+  labels:
+    app: trussihealth-api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: trussihealth-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: trussihealth-api
+    spec:
+      containers:
+        - image: k8scrvidchainlabs.azurecr.io/trussihealth-api:latest
+          imagePullPolicy: "Always"
+          name: trussihealth-api
+          ports:
+            - containerPort: 8082
+          env:
+            - name: APP_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: trussihealth-api-configmap
+                  key: APP_ENV
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: trussihealth-api-configmap
+                  key: PORT
+            - name: ISSUER_DID
+              valueFrom:
+                configMapKeyRef:
+                  name: trussihealth-api-configmap
+                  key: ISSUER_DID
+            - name: VIDCHAIN_API
+              valueFrom:
+                configMapKeyRef:
+                  name: trussihealth-api-configmap
+                  key: VIDCHAIN_API
+            - name: TRUSSIHEALTH_ASSERTION
+              valueFrom:
+                secretKeyRef:
+                  name: trussihealth-authentication
+                  key: assertion
+            - name: ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: trussihealth-encryption
+                  key: key
+            - name: IPFS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: trussihealth-ipfs
+                  key: url
+            - name: CERTIFICATE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: trussihealth-certificate
+                  key: password
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trussihealth-api-service
+  labels:
+    app: trussihealth-api
+spec:
+  type: ClusterIP
+  ports:
+    - name: "8082"
+      port: 8082
+  selector:
+    app: trussihealth-api
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: trussihealth-api-ingress
+  namespace: labs
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts:
+        - labs.vidchain.net
+      secretName: wildcard-vidchain-net
+  rules:
+    - host: labs.vidchain.net
+      http:
+        paths:
+          - path: /health-data
+            pathType: Prefix
+            backend:
+              service:
+                name: trussihealth-api-service
+                port:
+                  number: 8082
