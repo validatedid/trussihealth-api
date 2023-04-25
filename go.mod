@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.0
-	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/ipfs/go-ipfs-api v0.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/testify v1.8.2
 )
@@ -23,7 +23,6 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/ipfs/boxo v0.8.0 // indirect
 	github.com/ipfs/go-cid v0.4.0 // indirect
-	github.com/ipfs/go-ipfs-api v0.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/leodido/go-urn v1.2.3 // indirect

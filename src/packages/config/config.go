@@ -31,6 +31,8 @@ func init() {
 		if err != nil {
 			log.Fatal("Error loading local .env file")
 		}
+	case "deployment":
+		break
 	default: // testing cases
 		err := godotenv.Load("../../../.env")
 		if err != nil {
