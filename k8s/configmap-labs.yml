@@ -6,5 +6,5 @@ data:
   APP_ENV: "deployment"
   PORT: "8082"
   ISSUER_DID: "did:ethr:0x9A668DBe392230c407beC406CC4bb965C16CAbee"
-  VIDCHAIN_API: "http://labs.vidchain.net"
+  VIDCHAIN_API: "https://labs.vidchain.net"
 
