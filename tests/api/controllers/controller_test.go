@@ -12,12 +12,12 @@ import (
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 	api.PostHealthDataController(r)
+	api.GetHealthDataController(r)
 	return r
 }
 
 func TestImportDataE2E(t *testing.T) {
 	router := setupRouter()
-
 	recorder := httptest.NewRecorder()
 	body := `{
     "data": {
@@ -179,6 +179,18 @@ func TestImportDataE2E(t *testing.T) {
 }`
 	req, _ := http.NewRequest("POST", "/health-data", strings.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+
+	router.ServeHTTP(recorder, req)
+
+	if recorder.Code != http.StatusOK {
+		t.Errorf("Unexpected status code: got %v want %v", recorder.Code, http.StatusOK)
+	}
+}
+func TestExportDataE2E(t *testing.T) {
+	router := setupRouter()
+	recorder := httptest.NewRecorder()
+	hash := "QmVHKK8MwmB6FTywF7giespBej7eW7i4x7y8683ZbAENhj"
+	req, _ := http.NewRequest("GET", "/health-data/"+hash, nil)
 
 	router.ServeHTTP(recorder, req)
 
