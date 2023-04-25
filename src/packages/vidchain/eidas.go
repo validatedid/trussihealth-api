@@ -3,7 +3,6 @@ package vidchain
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"net/http"
 
 	"github.com/validatedid/trussihealth-api/src/packages/config"
@@ -23,7 +22,7 @@ func NewEidas(client restClient.HTTPClient, apiAuthenticator Authenticator) (e *
 	return &Eidas{httpClient: client, authenticator: apiAuthenticator}
 }
 
-func (e Eidas) EsealVc(payload VerifiableCredential) (esealedVerifiableCredential EsealedVerifiableCredential) {
+func (e Eidas) EsealVc(payload VerifiableCredential) {
 	accessToken := e.authenticator.GetAccessToken()
 	requestBody := fmt.Sprintf(`{
 	"issuer": "%s",
@@ -33,8 +32,5 @@ func (e Eidas) EsealVc(payload VerifiableCredential) (esealedVerifiableCredentia
 	request, _ := http.NewRequest("POST", config.EIDAS_PATH, bytes.NewBufferString(requestBody))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	request.Header.Set("Content-Type", "application/json")
-	response, _ := e.httpClient.Do(request)
-	body, _ := io.ReadAll(response.Body)
-	esealedVerifiableCredential.Content = body
-	return esealedVerifiableCredential
+	e.httpClient.Do(request)
 }

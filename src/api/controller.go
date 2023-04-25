@@ -15,7 +15,6 @@ import (
 
 func PostHealthDataController(router *gin.Engine) {
 	router.POST("/health-data", func(c *gin.Context) {
-
 		jsonRequest, _ := io.ReadAll(c.Request.Body)
 		var healthData importData.HealthDataRequest
 		json.Unmarshal(jsonRequest, &healthData)
