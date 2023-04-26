@@ -67,7 +67,7 @@ stages:
             displayName: 'Go test'
             inputs:
               command: 'custom'
-              customCommand: 'go test -v $(dir)/tests/packages/...'
+              customCommand: 'test -v $(dir)/tests/packages/...'
   - stage: 'Build'
     jobs:
       - job: Build
