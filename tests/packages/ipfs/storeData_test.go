@@ -2,10 +2,8 @@ package storeData_test
 
 import (
 	"bytes"
-	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
 	"io"
 	"strings"
@@ -58,10 +56,14 @@ func TestGetById(t *testing.T) {
 	assert.Equal(t, documentMock, data)
 }
 
+// To run this test it is required adding your IP to the whitelist here:
+// https://portal.azure.com/#@TestViDSocial.onmicrosoft.com/resource/subscriptions/d3585c03-8653-4ad7-972a-9b3ca65874b9/resourceGroups/rg-vidchain-dev/providers/Microsoft.Compute/virtualMachines/vidchain-ipfs-node/networking
+// Remember to remove your IP after running this integration test
+/*
 func TestGetByE2EId(t *testing.T) {
 	sh := shell.NewShell(config.IPFS_URL)
 	ipfsWrapper := ipfs.NewIPFSClientWrapper(sh)
 	ipfsStorageRepository := ipfs.NewStorageRepository(ipfsWrapper)
 	data := ipfsStorageRepository.GetById("QmVHKK8MwmB6FTywF7giespBej7eW7i4x7y8683ZbAENhj")
 	assert.NotNil(t, data)
-}
+}*/

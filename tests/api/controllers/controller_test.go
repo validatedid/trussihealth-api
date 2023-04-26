@@ -19,6 +19,10 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
+// To run these tests it is required adding your IP to the whitelist here:
+// https://portal.azure.com/#@TestViDSocial.onmicrosoft.com/resource/subscriptions/d3585c03-8653-4ad7-972a-9b3ca65874b9/resourceGroups/rg-vidchain-dev/providers/Microsoft.Compute/virtualMachines/vidchain-ipfs-node/networking
+// Remember to remove your IP after running e2e tests
+
 func TestImportDataE2E(t *testing.T) {
 	router := setupRouter()
 	recorder := httptest.NewRecorder()

@@ -27,8 +27,39 @@ variables:
   tag: $(Build.BuildNumber)
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
+  # run unit test: true/false
+  runUnitTests: 'true'
+  # test run title
+  testRunName: '[labs] trussihealth-api unit tests'
+  # unit tests directory
+  testDirectory: '$(dir)/tests/packages'
 
 stages:
+  - stage: UnitTests
+    displayName: 'Unit test stage'
+    jobs:
+      - job: SetCommitHashAsBuildNumber
+        displayName: 'Set build number to commit hash'
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: |
+                commit=$(Build.SourceVersion)
+                shortCommit=${commit:0:7}
+                echo "##vso[build.updatebuildnumber]commit.$shortCommit"
+            displayName: 'set commit hash'
+      - job: RunUnitTests
+        displayName: 'Run unit tests: $(variables.runUnitTests)'
+        pool:
+          vmImage: $(vmImageName)
+        condition: eq('${{ variables.runUnitTests}}', 'true')
+        steps:
+          - task: Go@0
+            inputs:
+              command: 'test'
+              workingDirectory: '$(testDirectory)...'
   - stage: 'Build'
     jobs:
       - job: Build
