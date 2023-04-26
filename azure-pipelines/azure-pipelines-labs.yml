@@ -66,6 +66,10 @@ stages:
               command: 'get'
               workingDirectory: '$(dir)/src'
           - task: Go@0
+            inputs:
+              command: 'build'
+              workingDirectory: '$(dir)/src'
+          - task: Go@0
             displayName: 'Go test'
             inputs:
               command: 'test'
