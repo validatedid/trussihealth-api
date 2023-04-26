@@ -91,7 +91,9 @@ func TestEsealVc(t *testing.T) {
 	eidas := vidchain.NewEidas(mockHttpClient, apiAuthenticatorMock)
 	vcPayload := vidchain.VerifiableCredential{Content: []byte(verifiableCredential)}
 
-	eidas.EsealVc(vcPayload)
+	err := eidas.EsealVc(vcPayload)
+
+	assert.Nil(t, err)
 
 	data := fmt.Sprintf(`{
 	"issuer": "%s",

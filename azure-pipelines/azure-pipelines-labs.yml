@@ -56,9 +56,18 @@ stages:
           vmImage: $(vmImageName)
         condition: eq('${{ variables.runUnitTests}}', 'true')
         steps:
+          - task: GoTool@0
+            inputs:
+              version: '1.13.5'
+          - task: Go@0
+            inputs:
+              command: 'get'
+              arguments: '-d'
+              workingDirectory: '$(dir)'
           - task: Go@0
             inputs:
               command: 'test'
+              arguments: '-v'
               workingDirectory: '$(testDirectory)...'
   - stage: 'Build'
     jobs:
