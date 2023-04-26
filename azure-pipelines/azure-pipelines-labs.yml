@@ -54,21 +54,12 @@ stages:
           vmImage: $(vmImageName)
         condition: eq('${{ variables.runUnitTests}}', 'true')
         steps:
-          - task: GoTool@0
-            displayName: 'Use Go 1.20.3'
-            inputs:
-              version: '1.20.3'
-          - task: Go@0
-            displayName: 'Go get'
-            inputs:
-              command: 'get'
-              workingDirectory: '$(dir)/src'
-          - task: Go@0
-            displayName: 'Go test'
-            inputs:
-              command: 'custom'
-              toolPath: '/usr/local/go/bin'
-              customCommand: 'test -v $(dir)/tests/packages/...'
+          - script: |
+              sudo apt-get update
+              sudo apt-get install -y golang-go
+              export GOPATH=$(pwd)/go
+              go test ./tests/packages/...
+            displayName: 'Run tests'
   - stage: 'Build'
     jobs:
       - job: Build
