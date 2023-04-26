@@ -58,7 +58,9 @@ stages:
               sudo apt-get update
               sudo apt-get install -y golang-go
               export GOPATH=$(pwd)/go
-              go test ./tests/packages/...
+            displayName: 'Install Go'
+          - script: |
+              go test -v ./tests/packages/...
             displayName: 'Run tests'
   - stage: 'Build'
     jobs:
