@@ -31,9 +31,6 @@ variables:
   runUnitTests: 'true'
   # test run title
   testRunName: '[labs] trussihealth-api unit tests'
-  GOBIN: '$(GOPATH)\bin' # Go binaries path
-  GOPATH: '$(system.defaultWorkingDirectory)\gopath' # Go workspace path
-  modulePath: '$(GOPATH)\src\github.com\$(build.repository.name)' # Path to the module's code
 
 stages:
   - stage: UnitTests
@@ -70,6 +67,7 @@ stages:
             displayName: 'Go test'
             inputs:
               command: 'custom'
+              toolPath: '/usr/local/go/bin'
               customCommand: 'test -v $(dir)/tests/packages/...'
   - stage: 'Build'
     jobs:
