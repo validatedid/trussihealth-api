@@ -57,13 +57,13 @@ stages:
         condition: eq('${{ variables.runUnitTests}}', 'true')
         steps:
           - task: GoTool@0
+            displayName: 'Use Go 1.20.3'
             inputs:
               version: '1.20.3'
           - task: Go@0
             inputs:
               command: 'get'
-              arguments: '-d'
-              workingDirectory: '$(dir)'
+              workingDirectory: '$(dir)/src'
           - task: Go@0
             inputs:
               command: 'test'
