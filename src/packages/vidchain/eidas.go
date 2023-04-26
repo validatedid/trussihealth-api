@@ -22,7 +22,7 @@ func NewEidas(client restClient.HTTPClient, apiAuthenticator Authenticator) (e *
 	return &Eidas{httpClient: client, authenticator: apiAuthenticator}
 }
 
-func (e Eidas) EsealVc(payload VerifiableCredential) {
+func (e Eidas) EsealVc(payload VerifiableCredential) error {
 	accessToken := e.authenticator.GetAccessToken()
 	requestBody := fmt.Sprintf(`{
 	"issuer": "%s",
@@ -32,5 +32,6 @@ func (e Eidas) EsealVc(payload VerifiableCredential) {
 	request, _ := http.NewRequest("POST", config.EIDAS_PATH, bytes.NewBufferString(requestBody))
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 	request.Header.Set("Content-Type", "application/json")
-	e.httpClient.Do(request)
+	_, err := e.httpClient.Do(request)
+	return err
 }

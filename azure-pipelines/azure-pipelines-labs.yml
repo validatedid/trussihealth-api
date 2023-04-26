@@ -59,8 +59,7 @@ stages:
           - task: Go@0
             inputs:
               command: 'test'
-              arguments: '-v'
-              workingDirectory: '$(testDirectory)'
+              workingDirectory: '$(testDirectory)...'
   - stage: 'Build'
     jobs:
       - job: Build

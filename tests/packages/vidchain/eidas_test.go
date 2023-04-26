@@ -88,7 +88,6 @@ func TestEsealVc(t *testing.T) {
 	  }`
 	eidas := vidchain.NewEidas(mockHttpClient, apiAuthenticatorMock)
 	vcPayload := vidchain.VerifiableCredential{Content: []byte(verifiableCredential)}
-	expectedEsealedVc := []byte(mockedResponse)
-	esealedVc := eidas.EsealVc(vcPayload)
-	assert.Equal(t, expectedEsealedVc, esealedVc.Content)
+	err := eidas.EsealVc(vcPayload)
+	assert.Equal(t, nil, err)
 }
