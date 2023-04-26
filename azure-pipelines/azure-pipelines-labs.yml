@@ -31,8 +31,6 @@ variables:
   runUnitTests: 'true'
   # test run title
   testRunName: '[labs] trussihealth-api unit tests'
-  # unit tests directory
-  testDirectory: '$(dir)/tests/packages'
 
 stages:
   - stage: UnitTests
@@ -66,15 +64,11 @@ stages:
               command: 'get'
               workingDirectory: '$(dir)/src'
           - task: Go@0
-            inputs:
-              command: 'build'
-              workingDirectory: '$(dir)/src'
-          - task: Go@0
             displayName: 'Go test'
             inputs:
               command: 'test'
               arguments: '-v'
-              workingDirectory: '$(testDirectory)/...'
+              workingDirectory: '$(dir)/tests/packages/...'
   - stage: 'Build'
     jobs:
       - job: Build
