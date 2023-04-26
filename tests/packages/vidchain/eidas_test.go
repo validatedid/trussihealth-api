@@ -2,8 +2,10 @@ package vidchain_test
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/validatedid/trussihealth-api/src/packages/config"
 	"github.com/validatedid/trussihealth-api/src/packages/vidchain"
 	"io"
 	"net/http"
@@ -88,7 +90,16 @@ func TestEsealVc(t *testing.T) {
 	  }`
 	eidas := vidchain.NewEidas(mockHttpClient, apiAuthenticatorMock)
 	vcPayload := vidchain.VerifiableCredential{Content: []byte(verifiableCredential)}
-	expectedEsealedVc := []byte(mockedResponse)
-	esealedVc := eidas.EsealVc(vcPayload)
-	assert.Equal(t, expectedEsealedVc, esealedVc.Content)
+
+	eidas.EsealVc(vcPayload)
+
+	data := fmt.Sprintf(`{
+	"issuer": "%s",
+	"payload": %s,
+	"password": "%s"
+	}`, config.ISSUER_DID, vcPayload.Content, config.CERTIFICATE_PASSWORD)
+	expectedRequestEseal, _ := http.NewRequest("POST", "https://url", bytes.NewBufferString(data))
+
+	calledRequest := mockHttpClient.Calls[0].Arguments[0].(*http.Request)
+	assert.Equal(t, calledRequest.Body, expectedRequestEseal.Body)
 }
