@@ -7,6 +7,8 @@ This API exposes 2 endpoints:
 * `POST /health-data` encrypts data and saves it into IPFS plus deliver an eSealed Verifiable Credential to data owner.
 * `GET /health-data/<documentHash>` retrieves document from IPFS and decrypts it.
 
+You can find API requests examples that can be imported into Postman in `examples` directory.
+
 ## Environment variables
 
 This project requires to have a `.env` file with all these environment variables set in the root directory of the project.
