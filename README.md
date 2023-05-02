@@ -1,6 +1,6 @@
-# TRUSSIHEALTH API
+# TruSSI Health API
 
-This project contains an API component used in [TrussiHealth](https://ontochain.ngi.eu/content/trussihealth-decentralized-trustworthy-health-information-exchange-patients-self-sovereign). Specifically, this API is used by health centers to deliver health credentials to patients and by doctors to retrieve health data securely saved.
+This project contains an API component used in [TruSSI Health](https://ontochain.ngi.eu/content/trussihealth-decentralized-trustworthy-health-information-exchange-patients-self-sovereign). Specifically, this API is used by health centers to deliver health credentials to patients and by doctors to retrieve health data securely saved.
 
 This API exposes 2 endpoints:
 
