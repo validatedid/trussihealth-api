@@ -67,7 +67,7 @@ spec:
                 secretKeyRef:
                   name: trussihealth-certificate
                   key: password
-            - name: API_KEY
+            - name: PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: trussihealth-api-key

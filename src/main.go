@@ -10,7 +10,7 @@ func main() {
 	r := gin.Default()
 
 	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-		"apiKey": config.API_KEY,
+		"trussihealth": config.PASSWORD,
 	}))
 
 	api.PostHealthDataController(authorized)

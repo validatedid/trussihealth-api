@@ -21,7 +21,7 @@ plus
 
 ```
 # TrussiHealth API Authentication 
-API_KEY=
+PASSWORD=
 
 # TrussiHealth API encryption key for storing data
 ENCRYPTION_KEY=

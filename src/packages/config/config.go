@@ -18,7 +18,7 @@ var (
 	IPFS_URL                   = ""
 	ISSUER_DID                 = ""
 	CERTIFICATE_PASSWORD       = ""
-	API_KEY                    = ""
+	PASSWORD                   = ""
 )
 
 func init() {
@@ -49,7 +49,7 @@ func init() {
 	IPFS_URL = GetEnvVariable("IPFS_URL")
 	ISSUER_DID = GetEnvVariable("ISSUER_DID")
 	CERTIFICATE_PASSWORD = GetEnvVariable("CERTIFICATE_PASSWORD")
-	API_KEY = GetEnvVariable("API_KEY")
+	PASSWORD = GetEnvVariable("PASSWORD")
 }
 
 // Get the value of an environment variable
