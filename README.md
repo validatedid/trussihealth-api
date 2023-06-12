@@ -7,7 +7,7 @@ This API exposes 2 endpoints:
 * `POST /health-data` encrypts data and saves it into IPFS plus deliver an eSealed Verifiable Credential to data owner.
 * `GET /health-data/<documentHash>` retrieves document from IPFS and decrypts it.
 
-You can find API requests examples that can be imported into Postman in `examples` directory.
+You can find API requests examples importable into Postman in `examples` directory.
 
 ## Environment variables
 
@@ -67,6 +67,6 @@ go build
 
 First of all, [install Docker](https://docs.docker.com/engine/install/) on your server. Afterwards, you will be able to build the docker image and run it:
 ```
-docker build -t trussihealth:latest
+docker build -t trussihealth:latest .
 docker run --env-file=.env -p 3011:3011 -t trussihealth:latest
 ```
