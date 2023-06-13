@@ -46,26 +46,57 @@ Please, contact [VIDchain support](mailto:support@vidchain.org) for more details
 
 ## Run it locally
 
-This project can be run locally or using Docker.
+This project can be run locally or using Docker. In any case, please set the environment variables first.
 
-### Golang
+### Environment variables
+
+To run the code locally you will need to create a `.env` file in the root directory. Copy the keys of `.env.example` to your `.env` file and request the values to [Email Address](mailto:support@validatedid.com).
+
+```
+APP_ENV=local # Set this to local for running locally
+PORT=3011 # You can choose in which port to run
+TRUSSIHEALTH_ASSERTION= # Request value
+ENCRYPTION_KEY= # Request value
+VIDCHAIN_API= # Request value
+IPFS_URL= # Request value
+ISSUER_DID= # Request value
+CERTIFICATE_PASSWORD= # Request value
+PASSWORD= # Request value
+```
+
+Notice that to run this project locally using Validated ID IPFS node, you will need to request access as well.
+
+## Golang
+
 
 This project is developed in Golang. To run it you will need to [install Golang](https://go.dev/doc/install) in your machine.
-Once you have Golang installed, you simply have to run the following command in the source directory:
+
+Once you have Golang installed, then you simply have to run the following command in the source directory:
+```
+go run src/main.go
+```
+
+Alternatively, if you want to build an executable to be distributed, you can run:
 
 ```
-go run
+go build -o GoExecutable src/main.go
+```
+You can run this executable like:
+```
+./GoExecutable
 ```
 
-If you want to build an executable to be distributed, you can run:
-
-```
-go build
-```
+**NOTE: This repository has been tested with go version 1.20.3**
 
 ## Docker
 
-First of all, [install Docker](https://docs.docker.com/engine/install/) on your server. Afterwards, you will be able to build the docker image and run it:
+First of all, [install Docker](https://docs.docker.com/engine/install/) on your machine. Afterwards, uncomment line 12 at `Dockerfile`:
+```
+# Uncomment this line to run the image locally
+COPY .env .
+```
+
+Now, you are ready to build the docker image and run it:
 ```
 docker build -t trussihealth:latest .
 docker run --env-file=.env -p 3011:3011 -t trussihealth:latest

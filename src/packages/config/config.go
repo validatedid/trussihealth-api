@@ -27,15 +27,10 @@ func init() {
 	env := os.Getenv("APP_ENV")
 
 	switch env {
-	case "local":
-		err := godotenv.Load(".env")
-		if err != nil {
-			log.Fatal("Error loading local .env file")
-		}
 	case "deployment":
 		break
 	default: // testing cases
-		err := godotenv.Load("../../../.env")
+		err := godotenv.Load(".env")
 		if err != nil {
 			log.Fatal("Error loading test .env file")
 		}

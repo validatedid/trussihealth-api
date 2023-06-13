@@ -8,15 +8,8 @@ WORKDIR /app
 COPY src/ ./src/
 COPY go.mod .
 COPY go.sum .
-# How to run docker locally
-# Uncomment
+# Uncomment this line to run the image locally
 # COPY .env .
-# and run
-# docker run -e APP_ENV=local -p 3011:3011 -t trussicontainer
-# OR
-# Set APP_ENV=deployment in your .env file and run
-# docker run --env-file=.env -p 3011:3011 -t trussicontainer
-
 
 # install the dependencies
 RUN go mod download
