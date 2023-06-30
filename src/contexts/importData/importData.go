@@ -8,7 +8,6 @@ import (
 	"github.com/validatedid/trussihealth-api/src/packages/vidchain"
 
 	"github.com/validatedid/trussihealth-api/src/packages/cryptography"
-	"github.com/validatedid/trussihealth-api/src/packages/dataTransformer"
 	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
 )
 
@@ -44,10 +43,8 @@ func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
 
 func encryptData(healthDataRequest HealthDataRequest) (string, string) {
 	data, _ := json.Marshal(healthDataRequest.Data)
-	healthDataDetails := dataTransformer.DataTransformer{}.Extract(string(data))
-	json, _ := json.Marshal(healthDataDetails)
 	basicCryptographer := cryptography.BasicCryptographer{}
-	hash := basicCryptographer.Hash(string(json))
-	encryptedData := basicCryptographer.Encrypt(string(json), []byte(config.ENCRYPTION_KEY))
+	hash := basicCryptographer.Hash(string(data))
+	encryptedData := basicCryptographer.Encrypt(string(data), []byte(config.ENCRYPTION_KEY))
 	return hash, encryptedData
 }
