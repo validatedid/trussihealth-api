@@ -1,4 +1,4 @@
-package vidchain_test
+package issuer
 
 import (
 	"bytes"

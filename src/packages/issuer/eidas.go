@@ -25,7 +25,7 @@ func (e Eidas) EsealVc(payload VerifiableCredential) error {
 	requestBody := fmt.Sprintf(`{
 	"payload": %s,
 	"password": "%s"
-	}`, config.ISSUER_DID, payload.Content, config.CERTIFICATE_PASSWORD)
+	}`, payload.Content, config.CERTIFICATE_PASSWORD)
 	request, _ := http.NewRequest("POST", config.ESEAL_API, bytes.NewBufferString(requestBody))
 	request.Header.Set("Content-Type", "application/json")
 	_, err := e.httpClient.Do(request)

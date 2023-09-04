@@ -26,8 +26,10 @@ func init() {
 	switch env {
 	case "deployment":
 		break
-	default: // testing cases
-		err := godotenv.Load(".env")
+	default:
+		// testing cases
+		// err := godotenv.Load("../../../.env")
+		err := godotenv.Load("./.env")
 		if err != nil {
 			log.Fatal("Error loading test .env file")
 		}

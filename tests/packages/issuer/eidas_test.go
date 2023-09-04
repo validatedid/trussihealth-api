@@ -1,4 +1,4 @@
-package vidchain_test
+package issuer
 
 import (
 	"bytes"
@@ -96,10 +96,9 @@ func TestEsealVc(t *testing.T) {
 	assert.Nil(t, err)
 
 	data := fmt.Sprintf(`{
-	"issuer": "%s",
 	"payload": %s,
 	"password": "%s"
-	}`, config.ISSUER_DID, vcPayload.Content, config.CERTIFICATE_PASSWORD)
+	}`, vcPayload.Content, config.CERTIFICATE_PASSWORD)
 	expectedRequestEseal, _ := http.NewRequest("POST", "https://url", bytes.NewBufferString(data))
 
 	calledRequest := mockHttpClient.Calls[0].Arguments[0].(*http.Request)
