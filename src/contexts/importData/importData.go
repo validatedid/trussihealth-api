@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/validatedid/trussihealth-api/src/packages/config"
+	"github.com/validatedid/trussihealth-api/src/packages/issuer"
 	"github.com/validatedid/trussihealth-api/src/packages/restClient"
-	"github.com/validatedid/trussihealth-api/src/packages/vidchain"
 
 	"github.com/validatedid/trussihealth-api/src/packages/cryptography"
 	"github.com/validatedid/trussihealth-api/src/packages/ipfs"
@@ -18,17 +18,15 @@ type HealthDataRequest struct {
 
 type ImportData struct {
 	ipfsStorageRepository *ipfs.IpfsStorageRepository
-	apiAuthenticator      *vidchain.ApiAuthenticator
-	credential            *vidchain.Credential
-	eidas                 *vidchain.Eidas
+	credential            *issuer.Credential
+	eidas                 *issuer.Eidas
 }
 
 func NewImportData(client restClient.HTTPClient, ipfsClient ipfs.IPFSClient) (i *ImportData) {
 	ipfs := ipfs.NewStorageRepository(ipfsClient)
-	authenticator := vidchain.NewVidchainApiAuthenticator(client)
-	credentialCreator := vidchain.NewCredential(client, authenticator)
-	eidasSealer := vidchain.NewEidas(client, authenticator)
-	return &ImportData{ipfsStorageRepository: ipfs, apiAuthenticator: authenticator, credential: credentialCreator, eidas: eidasSealer}
+	credentialCreator := issuer.NewCredential(client)
+	eidasSealer := issuer.NewEidas(client)
+	return &ImportData{ipfsStorageRepository: ipfs, credential: credentialCreator, eidas: eidasSealer}
 }
 
 func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
@@ -36,7 +34,7 @@ func (i *ImportData) Execute(healthDataRequest HealthDataRequest) {
 
 	ipfsIdentifier := i.ipfsStorageRepository.Save(encryptedData)
 
-	vc := i.credential.CreateVc(vidchain.VcPayload{DocumentId: ipfsIdentifier, Hash: hash}, healthDataRequest.Did)
+	vc := i.credential.CreateVc(issuer.VcPayload{DocumentId: ipfsIdentifier, Hash: hash}, healthDataRequest.Did)
 
 	i.eidas.EsealVc(vc)
 }

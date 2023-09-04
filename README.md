@@ -9,19 +9,22 @@ This API exposes 2 endpoints:
 
 You can find API requests examples importable into Postman in `examples` directory.
 
-## Environment variables
+## Prerequisites
 
-This project requires to have a `.env` file with all these environment variables set in the root directory of the project.
+
+### 1 - Run TruSSIHealth signer
+
+Please, clone [TruSSIHealth Signer repository](https://github.com/validatedid/trussihealth-signer) that contains independent components for verifiable credential issuance and eSeal. Follow the instructions and run it.
+
+### 2 - Set Environment variables
+
+This project requires to have a `.env` file with all these environment variables set in the root directory of the project. Copy paste `.env.example` into a `.env` file and place it in the root directory.
+
 This file must contain the following input:
 ```
-VIDCHAIN_API=http://labs.vidchain.net
 APP_ENV=deployment
 PORT=3011
-```
 
-plus 
-
-```
 # TrussiHealth API Authentication 
 PASSWORD=
 
@@ -31,40 +34,24 @@ ENCRYPTION_KEY=
 # IPFS endpoint where data is stored/retrieved
 IPFS_URL=
 
-# Authentication information towards VIDchain API
-TRUSSIHEALTH_ASSERTION=
-
 # TrussiHealth VIDchain Entity DID
 ISSUER_DID=
 
 # TrussiHealth Certificate's password to eseal issued VCs
 CERTIFICATE_PASSWORD=
+
+# TruSSIHealth Signer endpoint for credential issuance
+VC_API=http://127.0.0.1:3000/verifiable-credential/v1/signatures
+
+# TruSSIHealth Signer endpoint for credential eseal
+ESEAL_API=http://127.0.0.1:3001/eseal/v1/signatures
 ```
 
-Notice that for these last we can not set the secret values on the repository for obvious security reasons. 
-Please, contact [VIDchain support](mailto:support@vidchain.org) for more details.
+Notice that for these two last you will have to provide the right endpoints where you decide to host TruSSIHealth Signer.
 
-## Run it locally
+## Run TruSSIHealth API
 
 This project can be run locally or using Docker. In any case, please set the environment variables first.
-
-### Environment variables
-
-To run the code locally you will need to create a `.env` file in the root directory. Copy the keys of `.env.example` to your `.env` file and request the values to [Email Address](mailto:support@validatedid.com).
-
-```
-APP_ENV=local # Set this to local for running locally
-PORT=3011 # You can choose in which port to run
-TRUSSIHEALTH_ASSERTION= # Request value
-ENCRYPTION_KEY= # Request value
-VIDCHAIN_API= # Request value
-IPFS_URL= # Request value
-ISSUER_DID= # Request value
-CERTIFICATE_PASSWORD= # Request value
-PASSWORD= # Request value
-```
-
-Notice that to run this project locally using Validated ID IPFS node, you will need to request access as well.
 
 ## Golang
 
